@@ -8,8 +8,21 @@
       "~/*": [
         "*"
       ],
-      "@/*": [
-        "./*"
+      "@/*": [ "./*" ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@screens/*": [
+        "./src/screens/*"
+      ],
+      "@types/*": [
+        "./src/types/*"
       ],
       "tailwind.config": [
         "./tailwind.config.js"
