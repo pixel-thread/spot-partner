@@ -17,12 +17,14 @@ import { Icon } from '../../ui/icon';
 import { UpdateParkingForm } from './UpdateParking';
 import React from 'react';
 import { PlanCardSheet } from '../plan/PlanCard';
+import { ParkingImageUploadSheet } from './ParkingImageUploadSheet';
 
 type ParkingT = Required<z.infer<typeof parkingSchema>>;
 
 export const Parking = () => {
   const [isUpdating, setIsUpdating] = React.useState(false);
   const [isAddingSlot, setIsAddingSlot] = React.useState(false);
+  const [isAddingImage, setIsAddingImage] = React.useState(false);
   const { id } = useLocalSearchParams();
   const parkingId = id?.toString();
   const { data, isLoading, isFetching, refetch } = useQuery({
@@ -117,7 +119,7 @@ export const Parking = () => {
         </Card>
 
         <HStack space="sm" className="justify-between">
-          <Button variant="outline">
+          <Button onPress={() => setIsAddingImage(true)} variant="outline">
             <FontAwesome size={18} name="cloud-upload" />
             <ButtonText>Image</ButtonText>
           </Button>
@@ -189,6 +191,11 @@ export const Parking = () => {
       <PlanCardSheet
         open={isAddingSlot && !!data.id}
         onClose={() => setIsAddingSlot(false)}
+        parkingId={data.id}
+      />
+      <ParkingImageUploadSheet
+        open={isAddingImage && !!data.id}
+        onClose={() => setIsAddingImage(false)}
         parkingId={data.id}
       />
     </ScrollView>
