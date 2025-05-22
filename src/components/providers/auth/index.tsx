@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { AuthContext } from '~/src/context/auth';
 import { AUTH_ENDPOINT } from '~/src/libs/endpoints/auth';
@@ -9,6 +9,7 @@ import { logger } from '~/src/utils/logger';
 import { getToken, removeToken } from '~/src/utils/storage/token';
 import { Ternary } from '../../common/Ternary';
 import { LoadingScreen } from '../../common/LoadingScreen';
+import { getUser, removeUser, saveUser } from '~/src/utils/storage/user';
 
 type Props = {
   children: Readonly<React.ReactNode>;
@@ -25,6 +26,7 @@ const onSuccessLogout = async () => {
 export const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = React.useState<UserT | null>(null);
   const [isInitial, setIsInitial] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
 
   const { mutate, isPending: isAuthLoading } = useMutation({
     mutationKey: ['user'],
@@ -35,8 +37,10 @@ export const AuthProvider = ({ children }: Props) => {
         setUser(userData);
         if (userData) {
           logger.info('Saving User To Storage after fetching');
+          await saveUser(userData);
           return userData;
         }
+        return userData;
       }
       removeToken();
       logger.error('User failed to verify');
@@ -48,8 +52,16 @@ export const AuthProvider = ({ children }: Props) => {
     },
   });
 
-  const verifyUser = async () => {
+  const verifyUser = useCallback(async () => {
     try {
+      setLoading(true);
+      const user = await getUser();
+      if (user) {
+        setUser(user);
+        logger.info('Getting User From Storage');
+        setLoading(false);
+        return;
+      }
       const token = await getToken();
       if (token) {
         mutate();
@@ -63,15 +75,18 @@ export const AuthProvider = ({ children }: Props) => {
       logger.error({ message: 'Error verifying user', error });
     } finally {
       setIsInitial(false);
+      setLoading(false);
     }
-  };
+  }, [mutate, setUser, setIsInitial]);
 
   const { mutate: onLogout, isPending: isLogoutPending } = useMutation({
     mutationFn: () => http.post(AUTH_ENDPOINT.POST_LOGOUT),
     onSuccess: async () => {
       onSuccessLogout();
+
+      await removeUser();
       setUser(null);
-      logger.info('Logout Successfull');
+      logger.info('Logout Successfully');
     },
     onError: (error) => {
       onSuccessLogout();
@@ -92,6 +107,7 @@ export const AuthProvider = ({ children }: Props) => {
   }, [isInitial, mutate, verifyUser]);
 
   const isLoading = isAuthLoading || isLogoutPending;
+
   const value: AuthContextI = {
     user,
     onLogout,
@@ -101,7 +117,7 @@ export const AuthProvider = ({ children }: Props) => {
 
   return (
     <AuthContext.Provider value={value}>
-      <Ternary condition={isLoading} ifTrue={<LoadingScreen />} ifFalse={children} />
+      <Ternary condition={isLoading || loading} ifTrue={<LoadingScreen />} ifFalse={children} />
     </AuthContext.Provider>
   );
 };

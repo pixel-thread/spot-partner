@@ -1,13 +1,12 @@
-import { Text } from '@components/ui/text';
 import { Box } from '~/src/components/ui/box';
-import { Fab, FabLabel, FabIcon } from '~/src/components/ui/fab';
+import { Fab, FabIcon } from '~/src/components/ui/fab';
 import { AddIcon } from '~/src/components/ui/icon';
 import { useState } from 'react';
-import { AddParkingForm } from './AddParkingForm';
-import { ParkingList } from './ParkingListItems';
+import { AddParkingForm } from '../parking/AddParkingForm';
+import { ParkingList } from '../parking/ParkingList';
 
 export const HomeScreen = () => {
-  const [showActionsheet, setShowActionsheet] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
   return (
     <Box className="h-screen flex-1 items-center justify-center">
@@ -16,15 +15,12 @@ export const HomeScreen = () => {
         size="lg"
         placement="bottom right"
         isHovered={false}
-        isDisabled={false}
+        isDisabled={isSheetOpen}
         isPressed={false}
-        onPress={() => setShowActionsheet(true)}>
+        onPress={() => setIsSheetOpen(true)}>
         <FabIcon as={AddIcon} />
-        <FabLabel>Add Parking</FabLabel>
       </Fab>
-      {showActionsheet && (
-        <AddParkingForm open={showActionsheet} onClose={() => setShowActionsheet(false)} />
-      )}
+      {isSheetOpen && <AddParkingForm open={isSheetOpen} onClose={() => setIsSheetOpen(false)} />}
     </Box>
   );
 };

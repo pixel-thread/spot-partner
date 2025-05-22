@@ -16,22 +16,22 @@ type RoleRoute = {
 const routeRoles: RoleRoute[] = [
   {
     url: '/',
-    role: ['USER', 'PARTNER', 'SUPER_ADMIN'],
+    role: ['PARTNER', 'SUPER_ADMIN'],
     needAuth: true,
   },
   {
     url: '/account',
-    role: ['USER', 'PARTNER', 'SUPER_ADMIN'],
+    role: ['PARTNER', 'SUPER_ADMIN'],
     needAuth: true,
   },
   {
-    url: '/parking',
-    role: ['USER', 'PARTNER', 'SUPER_ADMIN'],
+    url: '/parking/[id]',
+    role: ['PARTNER', 'SUPER_ADMIN'],
     needAuth: true,
   },
   {
     url: '/account',
-    role: ['USER', 'PARTNER', 'SUPER_ADMIN'],
+    role: ['PARTNER', 'SUPER_ADMIN'],
     needAuth: true,
   },
 ];
@@ -77,7 +77,7 @@ export const AuthGuard = ({ children }: Props) => {
         const hasRole = currentRoute.role.includes(userRole);
         logger.info({ 'Has Needed Role': hasRole });
         if (!hasRole) {
-          router.replace('/');
+          router.replace('/forbidden');
         }
       }
     }

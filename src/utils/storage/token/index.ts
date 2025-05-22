@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { AUTH_TOKEN_KEY } from '~/src/libs/constants/auth';
+import { removeUser } from '../user';
 
 class TokenError extends Error {
   constructor(message: string) {
@@ -39,6 +40,7 @@ export const getToken = async (): Promise<string | null> => {
 
 export const removeToken = async (): Promise<void> => {
   try {
+    await removeUser();
     await AsyncStorage.removeItem(TOKEN_KEY);
   } catch (error: any) {
     throw new TokenError(`Failed to remove token: ${error.message}`);

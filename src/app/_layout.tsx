@@ -6,6 +6,7 @@ import { AuthProvider } from '../components/providers/auth';
 import { TQueryProvider } from '../components/providers/query';
 import { AuthGuard } from '../components/guard/auth';
 import React, { useEffect } from 'react';
+import { SubscriptionProvider } from '../components/providers/subscription';
 
 export default function RootLayout() {
   const [isMounted, setMounted] = React.useState(false);
@@ -23,9 +24,11 @@ export default function RootLayout() {
     <GluestackUIProvider mode="light">
       <TQueryProvider>
         <AuthProvider>
-          <AuthGuard>
-            <Slot />
-          </AuthGuard>
+          <SubscriptionProvider>
+            <AuthGuard>
+              <Slot />
+            </AuthGuard>
+          </SubscriptionProvider>
         </AuthProvider>
       </TQueryProvider>
     </GluestackUIProvider>

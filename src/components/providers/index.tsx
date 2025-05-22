@@ -1,5 +1,4 @@
 import { View } from 'react-native';
-import Toast from 'react-native-toast-message';
 
 import { AuthProvider } from './auth';
 import { TQueryProvider } from './query';
@@ -28,8 +27,9 @@ export const MainProviders = ({ children }: Props) => {
       <AuthProvider>
         <SubscriptionProvider>
           <AuthGuard>
-            <View className="h-full w-full">{children}</View>
-            <Toast position="bottom" topOffset={50} />
+            <View className="bg-background dark:bg-dark-background flex min-h-screen w-full flex-col">
+              {children}
+            </View>
           </AuthGuard>
         </SubscriptionProvider>
       </AuthProvider>
